@@ -41,23 +41,23 @@ object Main {
     ).toDF("polarity", "sentence") //Columns of DataFrame
 
     //Regex Tokenizer (Custom tokenizer)
-    val word = "[a-zA-ZñÑáéíóú]" //Simbols that contain a word
+    val word = "[a-zA-ZñÑáéíóú]"//Simbols that contain a word
     val regexTokenizer = new RegexTokenizer()
       .setInputCol("sentence")
       .setOutputCol("words")
-      .setToLowercase(true)
+      .setToLowercase(true)//Avoid wrong
       .setPattern(
-      s"(([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6}))" + //Emails
+        s"(?=((https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?))" + //URLs
         s"|" +
-        s"((https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?)" + //URLs
-        s"|" +
+        s"(?=(([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})))"+ //Emails
+        s"|"+
         s"(#$word+)" + //Hashtags
         s"|" +
-        s"(@$word+)" + //Mentions
+        s"(?=(@$word+))" + //Mentions
         s"|" +
         s"($word+)" + //Words
         s"|" +
-        s"([0-9]+)").setGaps(false) //Mentions
+        s"(?=([0-9]+))").setGaps(false)//Mentions
 
 
     //Create trigram
