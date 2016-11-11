@@ -36,7 +36,7 @@ object Main {
                                                                           case "P+" => 5.0
                                                                           case _ => 0.0
                                                                         }
-                , (tweet \\ "content").text)
+                , clearText((tweet \\ "content").text))
       )
     ).toDF("polarity", "sentence") //Columns of DataFrame
 
@@ -47,17 +47,8 @@ object Main {
       .setOutputCol("words")
       .setToLowercase(true)//Avoid wrong
       .setPattern(
-        s"(?=((https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?))" + //URLs
-        s"|" +
-        s"(?=(([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})))"+ //Emails
-        s"|"+
-        s"(#$word+)" + //Hashtags
-        s"|" +
-        s"(?=(@$word+))" + //Mentions
-        s"|" +
-        s"($word+)" + //Words
-        s"|" +
-        s"(?=([0-9]+))").setGaps(false)//Mentions
+        s"$word+"
+    ).setGaps(false)//Indicates whether regex splits on gaps (true) or matches tokens (false).
 
 
     //Create trigram
@@ -119,4 +110,14 @@ object Main {
 
     spark.stop()
   }
+  
+   def clearText(document: String) : String = {
+    val word = "[a-zA-ZñÑáéíóú]"//Simbols that contain a word
+    var clearDocument=document.replaceAll("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\\\.-]*)*\\/?", "")
+    clearDocument=clearDocument.replaceAll("([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})", "")
+    clearDocument=clearDocument.replaceAll(s"@$word+", "")
+    clearDocument=clearDocument.replaceAll("[0-9]+", "")
+    clearDocument
+  }
+  
 }
