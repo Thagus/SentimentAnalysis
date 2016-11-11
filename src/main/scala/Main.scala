@@ -7,6 +7,8 @@ import scala.xml.XML
 
 
 object Main {
+  val word = "[a-zA-ZñÑáéíóú]"//Symbols that contain a word
+
   def main(args: Array[String]): Unit = {
 
     val spark = SparkSession
@@ -41,7 +43,7 @@ object Main {
     ).toDF("polarity", "sentence") //Columns of DataFrame
 
     //Regex Tokenizer (Custom tokenizer)
-    val word = "[a-zA-ZñÑáéíóú]"//Simbols that contain a word
+
     val regexTokenizer = new RegexTokenizer()
       .setInputCol("sentence")
       .setOutputCol("words")
@@ -112,7 +114,6 @@ object Main {
   }
   
    def clearText(document: String) : String = {
-    val word = "[a-zA-ZñÑáéíóú]"//Simbols that contain a word
     var clearDocument=document.replaceAll("(https?:\\/\\/)([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\\\.-]*)*\\/?", "")
     clearDocument=clearDocument.replaceAll("([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})", "")
     clearDocument=clearDocument.replaceAll(s"@$word+", "")
