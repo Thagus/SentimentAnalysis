@@ -1,5 +1,6 @@
 import org.apache.spark.sql.SparkSession
 
+import scala.collection.immutable.HashMap
 import scala.xml.XML
 
 
@@ -36,9 +37,14 @@ object Main {
         , clearText((tweet \\ "content").text.toLowerCase()))
     ).filter(tweet => tweet._2.length>0)  //Filter those that have no characters on them
 
+    var polarityMap: HashMap[Int, Double] = HashMap()
+    var docCount = 0
 
     ts.foreach(tweet => {
       println(tweet._1)
+      docCount += 1
+
+      polarityMap += (docCount -> tweet._1)
 
       //Create trigrams
       val ngrams = tweet._2.split(" ")
@@ -51,6 +57,12 @@ object Main {
 
       println()
     })
+
+
+
+
+
+
 
     spark.stop()
   }
